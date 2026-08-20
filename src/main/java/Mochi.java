@@ -21,6 +21,9 @@ public class Mochi {
 
         Scanner scanner = new Scanner(System.in);
 
+        String[] tasks = new String[100];
+        int n = 0;
+
         while (true) {
             String command = scanner.nextLine(); // creates string so use .equals
             System.out.println(separator);
@@ -30,7 +33,19 @@ public class Mochi {
                 break;
             }
 
-            System.out.println(command);
+            if (command.equals("list")) {
+                for (int i = 0; i < n; i++) {
+                    String listing = (i + 1) + ". " + tasks[i];
+                    System.out.println(listing);
+                }
+                System.out.println(separator);
+                continue; // bc only exits when use says bye
+            }
+
+            tasks[n] = command;
+            n++;
+
+            System.out.println("added: " + command);
             System.out.println(separator);
         }
     }
