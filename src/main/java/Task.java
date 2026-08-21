@@ -1,30 +1,47 @@
 /**
  * Represents a task and whether it has been completed.
  */
-
 public class Task {
+    /**
+     * Represents the completion status of a task.
+     */
+    private enum TaskStatus {
+        NOT_DONE(" "),
+        DONE("X");
+
+        private final String icon;
+
+        TaskStatus(String icon) {
+            this.icon = icon;
+        }
+
+        public String getIcon() {
+            return icon;
+        }
+    }
+
     protected String description;
-    protected boolean isDone;
+    private TaskStatus status;
 
     public Task(String description) {
         this.description = description;
-        this.isDone = false;
+        this.status = TaskStatus.NOT_DONE;
     }
 
     public String getStatusIcon() {
-        return (isDone ? "X" : " "); // mark done task with X
+        return status.getIcon();
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
     public void mark() {
-        this.isDone = true;
+        status = TaskStatus.DONE;
     }
 
     public void unmark() {
-        this.isDone = false;
+        status = TaskStatus.NOT_DONE;
     }
 
     @Override
