@@ -1,0 +1,18 @@
+/**
+ * Represents a task occurring during a specified period.
+ */
+public class Event extends Task {
+    private final String from;
+    private final String to;
+
+    public Event(String description, String from, String to) {
+        super(description);
+        this.from = from;
+        this.to = to;
+    }
+
+    @Override
+    public String toString() {
+        return "[E]" + super.toString() + String.format(" (from: %s to: %s)", this.from, this.to);
+    }
+}
