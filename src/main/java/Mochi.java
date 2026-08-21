@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 /**
  * Starts the Mochi chatbot application.
@@ -22,8 +23,7 @@ public class Mochi {
 
         Scanner scanner = new Scanner(System.in);
 
-        Task[] tasks = new Task[100];
-        int n = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         while (true) {
             String command = scanner.nextLine().trim();
             System.out.println(separator);
@@ -40,7 +40,8 @@ public class Mochi {
                     }
 
                     if (command.equals("mark")
-                            || command.equals("unmark")) {
+                            || command.equals("unmark")
+                            || command.equals("delete")) {
                         throw new MochiException(
                                 "Please specify a task number to " + words[0] + ".");
                     }
@@ -56,13 +57,13 @@ public class Mochi {
                                 "The task number must be a whole number.");
                     }
 
-                    if (target < 1 || target > n) {
+                    if (target < 1 || target > tasks.size()) {
                         throw new MochiException(
                                 "There is no task numbered " + target + ".");
                     }
 
                     System.out.println("Nice! I've marked this task as done:");
-                    Task t = tasks[target - 1];
+                    Task t = tasks.get(target - 1);
                     t.mark();
                     System.out.println("  " + t);
                     System.out.println(separator);
@@ -79,15 +80,39 @@ public class Mochi {
                                 "The task number must be a whole number.");
                     }
 
-                    if (target < 1 || target > n) {
+                    if (target < 1 || target > tasks.size()) {
                         throw new MochiException(
                                 "There is no task numbered " + target + ".");
                     }
 
                     System.out.println("OK, I've marked this task as not done yet:");
-                    Task t = tasks[target - 1];
+                    Task t = tasks.get(target - 1);
                     t.unmark();
                     System.out.println("  " + t);
+                    System.out.println(separator);
+                    continue;
+                }
+
+                if (words[0].equals("delete")) {
+                    int target;
+                    try {
+                        target = Integer.parseInt(words[1]);
+                    } catch (NumberFormatException e) {
+                        throw new MochiException(
+                                "The task number must be a whole number.");
+                    }
+
+                    if (target < 1 || target > tasks.size()) {
+                        throw new MochiException(
+                                "There is no task numbered " + target + ".");
+                    }
+
+                    Task removedTask = tasks.remove(target - 1);
+
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println("  " + removedTask);
+                    System.out.println(
+                            "Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(separator);
                     continue;
                 }
@@ -100,8 +125,8 @@ public class Mochi {
 
                 if (command.equals("list")) {
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < n; i++) {
-                        System.out.println((i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println((i + 1) + "." + tasks.get(i));
                     }
                     System.out.println(separator);
                     continue; // bc only exits when use says bye
@@ -160,18 +185,17 @@ public class Mochi {
                                 "An event needs a description, start, and end.");
                     }
 
-
                     newTask = new Event(description, from, to);
                 }
 
                 if (newTask != null) {
-                    tasks[n] = newTask;
+                    tasks.add(newTask);
+                    newTask = tasks.get(tasks.size() - 1);
 
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + newTask);
 
-                    n++;
-                    System.out.println("Now you have " + n + " tasks in the list.");
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(separator);
                     continue;
                 }
