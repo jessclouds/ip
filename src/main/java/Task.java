@@ -44,6 +44,26 @@ public class Task {
         status = TaskStatus.NOT_DONE;
     }
 
+    /**
+     * Converts this task into the line format used in the data file.
+     *
+     * @return the serialized task
+     */
+    public String toDataString() {
+        return formatDataString("T");
+    }
+
+    /**
+     * Formats the common fields shared by all saved task types.
+     *
+     * @param taskType single-letter code identifying the task type
+     * @return the task type, completion status, and description
+     */
+    protected String formatDataString(String taskType) {
+        return taskType + " | " + (status == TaskStatus.DONE ? "1" : "0")
+                + " | " + description;
+    }
+
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

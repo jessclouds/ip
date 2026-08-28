@@ -1,0 +1,7 @@
+T | 1 | valid todo
+X | 0 | unknown task
+D | 2 | invalid status | tomorrow
+D | 0 | valid deadline | Friday
+E | 0 | missing end time | Saturday
+
+E | 0 | valid event | Monday 2pm | Monday 3pm

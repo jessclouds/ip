@@ -1,5 +1,7 @@
-import java.util.Scanner;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Starts the Mochi chatbot application.
@@ -23,7 +25,8 @@ public class Mochi {
 
         Scanner scanner = new Scanner(System.in);
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage(Path.of("data", "duke.txt"));
+        ArrayList<Task> tasks = loadTasks(storage);
         while (true) {
             String command = scanner.nextLine().trim();
             System.out.println(separator);
@@ -65,6 +68,7 @@ public class Mochi {
                     System.out.println("Nice! I've marked this task as done:");
                     Task t = tasks.get(target - 1);
                     t.mark();
+                    saveTasks(storage, tasks);
                     System.out.println("  " + t);
                     System.out.println(separator);
                     continue;
@@ -88,6 +92,7 @@ public class Mochi {
                     System.out.println("OK, I've marked this task as not done yet:");
                     Task t = tasks.get(target - 1);
                     t.unmark();
+                    saveTasks(storage, tasks);
                     System.out.println("  " + t);
                     System.out.println(separator);
                     continue;
@@ -108,11 +113,11 @@ public class Mochi {
                     }
 
                     Task removedTask = tasks.remove(target - 1);
+                    saveTasks(storage, tasks);
 
                     System.out.println("Noted. I've removed this task:");
                     System.out.println("  " + removedTask);
-                    System.out.println(
-                            "Now you have " + tasks.size() + " tasks in the list.");
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(separator);
                     continue;
                 }
@@ -141,8 +146,7 @@ public class Mochi {
                     String details = command.substring("deadline ".length());
 
                     if (!details.contains(" /by ")) {
-                        throw new MochiException(
-                                "Use this format: deadline DESCRIPTION /by DATE.");
+                        throw new MochiException("Use this format: deadline DESCRIPTION /by DATE.");
                     }
 
                     String[] parts = details.split(" /by ", 2);
@@ -162,16 +166,14 @@ public class Mochi {
 
 
                     if (!details.contains(" /from ")) {
-                        throw new MochiException(
-                                "Use this format: event DESCRIPTION /from START /to END.");
+                        throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
                     }
 
                     String[] fromParts = details.split(" /from ", 2);
 
 
                     if (!fromParts[1].contains(" /to ")) {
-                        throw new MochiException(
-                                "Use this format: event DESCRIPTION /from START /to END.");
+                        throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
                     }
 
                     String[] toParts = fromParts[1].split(" /to ", 2);
@@ -190,6 +192,7 @@ public class Mochi {
 
                 if (newTask != null) {
                     tasks.add(newTask);
+                    saveTasks(storage, tasks);
                     newTask = tasks.get(tasks.size() - 1);
 
                     System.out.println("Got it. I've added this task:");
@@ -207,6 +210,40 @@ public class Mochi {
                 System.out.println(separator);
                 continue;
             }
+        }
+    }
+
+    /**
+     * Loads saved tasks, falling back to an empty list if the file cannot be read.
+     *
+     * @param storage storage used by the chatbot
+     * @return loaded tasks, or an empty list after a read failure
+     */
+    private static ArrayList<Task> loadTasks(Storage storage) {
+        try {
+            ArrayList<Task> tasks = storage.loadTasks();
+            for (String warning : storage.getLoadWarnings()) {
+                System.out.println("WARNING: " + warning);
+            }
+            return tasks;
+        } catch (IOException e) {
+            System.out.println(
+                    "OOPS!!! I couldn't read the data file. Starting with an empty task list.");
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Saves tasks and reports a file error without terminating the chatbot.
+     *
+     * @param storage storage used by the chatbot
+     * @param tasks current task list
+     */
+    private static void saveTasks(Storage storage, ArrayList<Task> tasks) {
+        try {
+            storage.saveTasks(tasks);
+        } catch (IOException e) {
+            System.out.println("OOPS!!! I couldn't save the task list to the data file.");
         }
     }
 }
