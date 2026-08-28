@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,10 +109,10 @@ public class Storage {
             task = new Todo(fields[2]);
             break;
         case "D":
-            task = new Deadline(fields[2], fields[3]);
+            task = createDeadline(fields);
             break;
         case "E":
-            task = new Event(fields[2], fields[3], fields[4]);
+            task = createEvent(fields);
             break;
         default:
             throw new AssertionError("Task type was validated before task creation");
@@ -121,6 +122,31 @@ public class Storage {
             task.mark();
         }
         return task;
+    }
+
+    /**
+     * Reconstructs a deadline while converting date parsing failures into data warnings.
+     */
+    private Deadline createDeadline(String[] fields) {
+        try {
+            return new Deadline(fields[2], DateTimeUtil.parse(fields[3]));
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException(
+                    "invalid date/time; expected " + DateTimeUtil.INPUT_FORMAT_DESCRIPTION);
+        }
+    }
+
+    /**
+     * Reconstructs an event while converting date parsing failures into data warnings.
+     */
+    private Event createEvent(String[] fields) {
+        try {
+            return new Event(fields[2],
+                    DateTimeUtil.parse(fields[3]), DateTimeUtil.parse(fields[4]));
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException(
+                    "invalid date/time; expected " + DateTimeUtil.INPUT_FORMAT_DESCRIPTION);
+        }
     }
 
     /**
