@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -160,7 +162,11 @@ public class Mochi {
                                 "A deadline needs both a description and a date.");
                     }
 
-                    newTask = new Deadline(description, by);
+                    try {
+                        newTask = new Deadline(description, DateTimeUtil.parse(by));
+                    } catch (DateTimeParseException e) {
+                        throw invalidDateTimeException();
+                    }
                 } else if (command.startsWith("event ")) {
                     String details = command.substring("event ".length());
 
@@ -187,7 +193,15 @@ public class Mochi {
                                 "An event needs a description, start, and end.");
                     }
 
-                    newTask = new Event(description, from, to);
+                    try {
+                        LocalDateTime start = DateTimeUtil.parse(from);
+                        LocalDateTime end = DateTimeUtil.parse(to);
+                        newTask = new Event(description, start, end);
+                    } catch (DateTimeParseException e) {
+                        throw invalidDateTimeException();
+                    } catch (IllegalArgumentException e) {
+                        throw new MochiException("An event must end after it starts.");
+                    }
                 }
 
                 if (newTask != null) {
@@ -245,5 +259,14 @@ public class Mochi {
         } catch (IOException e) {
             System.out.println("OOPS!!! I couldn't save the task list to the data file.");
         }
+    }
+
+    /**
+     * Creates the user-facing error for an invalid deadline or event date-time.
+     */
+    private static MochiException invalidDateTimeException() {
+        return new MochiException(
+                "Use a valid date and time in the format "
+                        + DateTimeUtil.INPUT_FORMAT_DESCRIPTION + ".");
     }
 }

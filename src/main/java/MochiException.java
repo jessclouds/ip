@@ -3,6 +3,8 @@
  */
 
 public class MochiException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     public MochiException(String message) {
         super(message);
     }

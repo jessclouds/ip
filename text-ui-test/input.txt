@@ -1,6 +1,8 @@
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline impossible date /by 2026-02-30 1800
+deadline return book /by 2026-06-06 1800
+event project meeting /from 2026-08-06 1400 /to 2026-08-06 1600
+event backwards /from 2026-08-06 1600 /to 2026-08-06 1400
 todo temporary task
 mark 1
 mark 2
