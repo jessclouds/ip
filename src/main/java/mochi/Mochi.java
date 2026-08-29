@@ -1,7 +1,15 @@
+package mochi;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import mochi.parser.Parser;
+import mochi.storage.Storage;
+import mochi.task.Task;
+import mochi.task.TaskList;
+import mochi.ui.Ui;
 
 /**
  * Coordinates Mochi's user interface, parser, task list, and storage.

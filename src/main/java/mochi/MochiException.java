@@ -1,3 +1,4 @@
+package mochi;
 /**
  * Represents an error caused by an invalid Mochi command.
  */

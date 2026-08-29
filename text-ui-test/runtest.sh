@@ -25,17 +25,21 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p out/production/ip
-javac -d out/production/ip src/main/java/*.java
+javac -d out/production/ip \
+    src/main/java/mochi/*.java \
+    src/main/java/mochi/*/*.java
 
 rm -f data/duke.txt text-ui-test/ACTUAL.TXT \
     text-ui-test/ACTUAL-LOADED.TXT text-ui-test/ACTUAL-CORRUPTED.TXT
 rmdir data 2>/dev/null || true
-java -cp out/production/ip Mochi < text-ui-test/input.txt > text-ui-test/ACTUAL.TXT
+java -cp out/production/ip mochi.Mochi \
+    < text-ui-test/input.txt \
+    > text-ui-test/ACTUAL.TXT
 
 diff -u text-ui-test/EXPECTED.TXT text-ui-test/ACTUAL.TXT
 diff -u text-ui-test/EXPECTED-DATA.TXT data/duke.txt
 
-java -cp out/production/ip Mochi \
+java -cp out/production/ip mochi.Mochi \
     < text-ui-test/input-loaded.txt \
     > text-ui-test/ACTUAL-LOADED.TXT
 
@@ -43,7 +47,7 @@ diff -u text-ui-test/EXPECTED-LOADED.TXT text-ui-test/ACTUAL-LOADED.TXT
 diff -u text-ui-test/EXPECTED-DATA.TXT data/duke.txt
 
 cp text-ui-test/CORRUPTED-DATA.TXT data/duke.txt
-java -cp out/production/ip Mochi \
+java -cp out/production/ip mochi.Mochi \
     < text-ui-test/input-loaded.txt \
     > text-ui-test/ACTUAL-CORRUPTED.TXT
 
