@@ -1,272 +1,112 @@
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
 /**
- * Starts the Mochi chatbot application.
+ * Coordinates Mochi's user interface, parser, task list, and storage.
  */
-
-
 public class Mochi {
-    public static void main(String[] args) {
-        String banner = " __  __            _     _ \n"
-                + "|  \\/  | ___   ___| |__ (_)\n"
-                + "| |\\/| |/ _ \\ / __| '_ \\| |\n"
-                + "| |  | | (_) | (__| | | | |\n"
-                + "|_|  |_|\\___/ \\___|_| |_|_|\n";
-        String separator = "____________________________________________________________";
+    private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
+    private final List<String> loadingWarnings;
+    private final boolean loadingFailed;
 
-        System.out.println(separator);
-        System.out.print(banner);
-        System.out.println("Hello! I'm Mochi.");
-        System.out.println("What can I do for you?");
-        System.out.println(separator);
+    /** Creates Mochi and loads its saved tasks. */
+    public Mochi(Path filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
 
-        Scanner scanner = new Scanner(System.in);
+        TaskList loadedTasks;
+        List<String> warnings;
+        boolean loadFailed;
+        try {
+            loadedTasks = new TaskList(storage.loadTasks());
+            warnings = storage.getLoadWarnings();
+            loadFailed = false;
+        } catch (IOException e) {
+            loadedTasks = new TaskList();
+            warnings = new ArrayList<>();
+            loadFailed = true;
+        }
+        tasks = loadedTasks;
+        loadingWarnings = warnings;
+        loadingFailed = loadFailed;
+    }
 
-        Storage storage = new Storage(Path.of("data", "duke.txt"));
-        ArrayList<Task> tasks = loadTasks(storage);
+    /** Runs the command loop until the user exits. */
+    public void run() {
+        ui.showWelcome();
+        showLoadingMessages();
+
         while (true) {
-            String command = scanner.nextLine().trim();
-            System.out.println(separator);
+            String input = ui.readCommand();
+            ui.showSeparator();
 
-            String[] words = command.trim().split("\\s+", 2);
             try {
-                if (words.length < 2) {
-                    if (command.equals("todo")
-                            || command.equals("deadline")
-                            || command.equals("event")) {
-                        throw new MochiException(
-                                "The description of a " + words[0]
-                                        + " cannot be empty.");
-                    }
-
-                    if (command.equals("mark")
-                            || command.equals("unmark")
-                            || command.equals("delete")) {
-                        throw new MochiException(
-                                "Please specify a task number to " + words[0] + ".");
-                    }
+                Parser.Command command = Parser.parse(input);
+                if (command.getType() == Parser.CommandType.BYE) {
+                    ui.showGoodbye();
+                    return;
                 }
-
-                if (words[0].equals("mark")) {
-                    int target;
-
-                    try {
-                        target = Integer.parseInt(words[1]);
-                    } catch (NumberFormatException e) {
-                        throw new MochiException(
-                                "The task number must be a whole number.");
-                    }
-
-                    if (target < 1 || target > tasks.size()) {
-                        throw new MochiException(
-                                "There is no task numbered " + target + ".");
-                    }
-
-                    System.out.println("Nice! I've marked this task as done:");
-                    Task t = tasks.get(target - 1);
-                    t.mark();
-                    saveTasks(storage, tasks);
-                    System.out.println("  " + t);
-                    System.out.println(separator);
-                    continue;
-                }
-
-                if (words[0].equals("unmark")) {
-                    int target;
-
-                    try {
-                        target = Integer.parseInt(words[1]);
-                    } catch (NumberFormatException e) {
-                        throw new MochiException(
-                                "The task number must be a whole number.");
-                    }
-
-                    if (target < 1 || target > tasks.size()) {
-                        throw new MochiException(
-                                "There is no task numbered " + target + ".");
-                    }
-
-                    System.out.println("OK, I've marked this task as not done yet:");
-                    Task t = tasks.get(target - 1);
-                    t.unmark();
-                    saveTasks(storage, tasks);
-                    System.out.println("  " + t);
-                    System.out.println(separator);
-                    continue;
-                }
-
-                if (words[0].equals("delete")) {
-                    int target;
-                    try {
-                        target = Integer.parseInt(words[1]);
-                    } catch (NumberFormatException e) {
-                        throw new MochiException(
-                                "The task number must be a whole number.");
-                    }
-
-                    if (target < 1 || target > tasks.size()) {
-                        throw new MochiException(
-                                "There is no task numbered " + target + ".");
-                    }
-
-                    Task removedTask = tasks.remove(target - 1);
-                    saveTasks(storage, tasks);
-
-                    System.out.println("Noted. I've removed this task:");
-                    System.out.println("  " + removedTask);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(separator);
-                    continue;
-                }
-
-                if (command.equals("bye")) {
-                    System.out.println("Bye. Hope to see you again soon!");
-                    System.out.println(separator);
-                    break;
-                }
-
-                if (command.equals("list")) {
-                    System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println((i + 1) + "." + tasks.get(i));
-                    }
-                    System.out.println(separator);
-                    continue; // bc only exits when use says bye
-                }
-
-                Task newTask = null;
-
-                if (command.startsWith("todo ")) {
-                    String description = command.substring("todo ".length()).trim();
-                    newTask = new Todo(description);
-                } else if (command.startsWith("deadline ")) {
-                    String details = command.substring("deadline ".length());
-
-                    if (!details.contains(" /by ")) {
-                        throw new MochiException("Use this format: deadline DESCRIPTION /by DATE.");
-                    }
-
-                    String[] parts = details.split(" /by ", 2);
-
-                    String description = parts[0].trim();
-
-                    String by = parts[1].trim();
-
-                    if (description.isEmpty() || by.isEmpty()) {
-                        throw new MochiException(
-                                "A deadline needs both a description and a date.");
-                    }
-
-                    try {
-                        newTask = new Deadline(description, DateTimeUtil.parse(by));
-                    } catch (DateTimeParseException e) {
-                        throw invalidDateTimeException();
-                    }
-                } else if (command.startsWith("event ")) {
-                    String details = command.substring("event ".length());
-
-
-                    if (!details.contains(" /from ")) {
-                        throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
-                    }
-
-                    String[] fromParts = details.split(" /from ", 2);
-
-
-                    if (!fromParts[1].contains(" /to ")) {
-                        throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
-                    }
-
-                    String[] toParts = fromParts[1].split(" /to ", 2);
-
-                    String description = fromParts[0].trim();
-                    String from = toParts[0].trim();
-                    String to = toParts[1].trim();
-
-                    if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                        throw new MochiException(
-                                "An event needs a description, start, and end.");
-                    }
-
-                    try {
-                        LocalDateTime start = DateTimeUtil.parse(from);
-                        LocalDateTime end = DateTimeUtil.parse(to);
-                        newTask = new Event(description, start, end);
-                    } catch (DateTimeParseException e) {
-                        throw invalidDateTimeException();
-                    } catch (IllegalArgumentException e) {
-                        throw new MochiException("An event must end after it starts.");
-                    }
-                }
-
-                if (newTask != null) {
-                    tasks.add(newTask);
-                    saveTasks(storage, tasks);
-                    newTask = tasks.get(tasks.size() - 1);
-
-                    System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + newTask);
-
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(separator);
-                    continue;
-                }
-                throw new MochiException(
-                        "I'm sorry, but I don't know what that means :-("
-                );
+                execute(command);
             } catch (MochiException e) {
-                System.out.println(e.toString());
-                System.out.println(separator);
-                continue;
+                ui.showError(e);
             }
         }
     }
 
-    /**
-     * Loads saved tasks, falling back to an empty list if the file cannot be read.
-     *
-     * @param storage storage used by the chatbot
-     * @return loaded tasks, or an empty list after a read failure
-     */
-    private static ArrayList<Task> loadTasks(Storage storage) {
-        try {
-            ArrayList<Task> tasks = storage.loadTasks();
-            for (String warning : storage.getLoadWarnings()) {
-                System.out.println("WARNING: " + warning);
-            }
-            return tasks;
-        } catch (IOException e) {
-            System.out.println(
-                    "OOPS!!! I couldn't read the data file. Starting with an empty task list.");
-            return new ArrayList<>();
+    private void execute(Parser.Command command) throws MochiException {
+        switch (command.getType()) {
+        case LIST:
+            ui.showTaskList(tasks);
+            break;
+        case ADD:
+            tasks.add(command.getTask());
+            saveTasks();
+            ui.showTaskAdded(command.getTask(), tasks.size());
+            break;
+        case DELETE:
+            Task deletedTask = tasks.delete(command.getTaskNumber());
+            saveTasks();
+            ui.showTaskDeleted(deletedTask, tasks.size());
+            break;
+        case MARK:
+            Task markedTask = tasks.mark(command.getTaskNumber());
+            saveTasks();
+            ui.showTaskMarked(markedTask);
+            break;
+        case UNMARK:
+            Task unmarkedTask = tasks.unmark(command.getTaskNumber());
+            saveTasks();
+            ui.showTaskUnmarked(unmarkedTask);
+            break;
+        case BYE:
+            throw new AssertionError("The bye command is handled before execution");
+        default:
+            throw new AssertionError("Unsupported command type");
         }
     }
 
-    /**
-     * Saves tasks and reports a file error without terminating the chatbot.
-     *
-     * @param storage storage used by the chatbot
-     * @param tasks current task list
-     */
-    private static void saveTasks(Storage storage, ArrayList<Task> tasks) {
-        try {
-            storage.saveTasks(tasks);
-        } catch (IOException e) {
-            System.out.println("OOPS!!! I couldn't save the task list to the data file.");
+    private void showLoadingMessages() {
+        if (loadingFailed) {
+            ui.showLoadingError();
+        }
+        for (String warning : loadingWarnings) {
+            ui.showLoadingWarning(warning);
         }
     }
 
-    /**
-     * Creates the user-facing error for an invalid deadline or event date-time.
-     */
-    private static MochiException invalidDateTimeException() {
-        return new MochiException(
-                "Use a valid date and time in the format "
-                        + DateTimeUtil.INPUT_FORMAT_DESCRIPTION + ".");
+    private void saveTasks() {
+        try {
+            storage.saveTasks(tasks.getTasks());
+        } catch (IOException e) {
+            ui.showSavingError();
+        }
+    }
+
+    public static void main(String[] args) {
+        new Mochi(Path.of("data", "duke.txt")).run();
     }
 }
