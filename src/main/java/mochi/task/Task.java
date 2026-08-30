@@ -1,4 +1,5 @@
 package mochi.task;
+
 /**
  * Represents a task and whether it has been completed.
  */
@@ -21,26 +22,48 @@ public class Task {
         }
     }
 
+    /** Description shown to the user and stored in the data file. */
     protected String description;
     private TaskStatus status;
 
+    /**
+     * Creates an incomplete task with the given description.
+     *
+     * @param description Description of the task.
+     */
     public Task(String description) {
         this.description = description;
         this.status = TaskStatus.NOT_DONE;
     }
 
+    /**
+     * Returns the icon representing whether this task is complete.
+     *
+     * @return {@code X} if complete, or a space otherwise.
+     */
     public String getStatusIcon() {
         return status.getIcon();
     }
 
+    /**
+     * Returns the description of this task.
+     *
+     * @return The task description.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Marks this task as complete.
+     */
     public void mark() {
         status = TaskStatus.DONE;
     }
 
+    /**
+     * Marks this task as incomplete.
+     */
     public void unmark() {
         status = TaskStatus.NOT_DONE;
     }
@@ -48,7 +71,7 @@ public class Task {
     /**
      * Converts this task into the line format used in the data file.
      *
-     * @return the serialized task
+     * @return The serialized task.
      */
     public String toDataString() {
         return formatDataString("T");
@@ -57,8 +80,8 @@ public class Task {
     /**
      * Formats the common fields shared by all saved task types.
      *
-     * @param taskType single-letter code identifying the task type
-     * @return the task type, completion status, and description
+     * @param taskType Single-letter code identifying the task type.
+     * @return The task type, completion status, and description.
      */
     protected String formatDataString(String taskType) {
         return taskType + " | " + (status == TaskStatus.DONE ? "1" : "0")

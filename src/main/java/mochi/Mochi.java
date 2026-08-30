@@ -19,31 +19,37 @@ public class Mochi {
     private final TaskList tasks;
     private final Ui ui;
     private final List<String> loadingWarnings;
-    private final boolean loadingFailed;
+    private final boolean isLoadingFailed;
 
-    /** Creates Mochi and loads its saved tasks. */
+    /**
+     * Creates Mochi and loads its saved tasks.
+     *
+     * @param filePath Path of the file used to load and save tasks.
+     */
     public Mochi(Path filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
 
         TaskList loadedTasks;
         List<String> warnings;
-        boolean loadFailed;
+        boolean isLoadingFailed;
         try {
             loadedTasks = new TaskList(storage.loadTasks());
             warnings = storage.getLoadWarnings();
-            loadFailed = false;
+            isLoadingFailed = false;
         } catch (IOException e) {
             loadedTasks = new TaskList();
             warnings = new ArrayList<>();
-            loadFailed = true;
+            isLoadingFailed = true;
         }
         tasks = loadedTasks;
         loadingWarnings = warnings;
-        loadingFailed = loadFailed;
+        this.isLoadingFailed = isLoadingFailed;
     }
 
-    /** Runs the command loop until the user exits. */
+    /**
+     * Runs the command loop until the user exits.
+     */
     public void run() {
         ui.showWelcome();
         showLoadingMessages();
@@ -67,38 +73,38 @@ public class Mochi {
 
     private void execute(Parser.Command command) throws MochiException {
         switch (command.getType()) {
-        case LIST:
-            ui.showTaskList(tasks);
-            break;
-        case ADD:
-            tasks.add(command.getTask());
-            saveTasks();
-            ui.showTaskAdded(command.getTask(), tasks.size());
-            break;
-        case DELETE:
-            Task deletedTask = tasks.delete(command.getTaskNumber());
-            saveTasks();
-            ui.showTaskDeleted(deletedTask, tasks.size());
-            break;
-        case MARK:
-            Task markedTask = tasks.mark(command.getTaskNumber());
-            saveTasks();
-            ui.showTaskMarked(markedTask);
-            break;
-        case UNMARK:
-            Task unmarkedTask = tasks.unmark(command.getTaskNumber());
-            saveTasks();
-            ui.showTaskUnmarked(unmarkedTask);
-            break;
-        case BYE:
-            throw new AssertionError("The bye command is handled before execution");
-        default:
-            throw new AssertionError("Unsupported command type");
+            case LIST:
+                ui.showTaskList(tasks);
+                break;
+            case ADD:
+                tasks.add(command.getTask());
+                saveTasks();
+                ui.showTaskAdded(command.getTask(), tasks.size());
+                break;
+            case DELETE:
+                Task deletedTask = tasks.delete(command.getTaskNumber());
+                saveTasks();
+                ui.showTaskDeleted(deletedTask, tasks.size());
+                break;
+            case MARK:
+                Task markedTask = tasks.mark(command.getTaskNumber());
+                saveTasks();
+                ui.showTaskMarked(markedTask);
+                break;
+            case UNMARK:
+                Task unmarkedTask = tasks.unmark(command.getTaskNumber());
+                saveTasks();
+                ui.showTaskUnmarked(unmarkedTask);
+                break;
+            case BYE:
+                throw new AssertionError("The bye command is handled before execution");
+            default:
+                throw new AssertionError("Unsupported command type");
         }
     }
 
     private void showLoadingMessages() {
-        if (loadingFailed) {
+        if (isLoadingFailed) {
             ui.showLoadingError();
         }
         for (String warning : loadingWarnings) {
@@ -114,6 +120,11 @@ public class Mochi {
         }
     }
 
+    /**
+     * Starts Mochi using the default task data file.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
         new Mochi(Path.of("data", "duke.txt")).run();
     }

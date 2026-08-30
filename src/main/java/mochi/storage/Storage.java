@@ -24,7 +24,7 @@ public class Storage {
     /**
      * Creates a storage object that writes to the given file.
      *
-     * @param filePath path of the data file
+     * @param filePath Path of the data file.
      */
     public Storage(Path filePath) {
         this.filePath = filePath;
@@ -33,8 +33,8 @@ public class Storage {
     /**
      * Loads tasks from the data file.
      *
-     * @return tasks reconstructed from the saved lines
-     * @throws IOException if the data file cannot be read
+     * @return Tasks reconstructed from the saved lines.
+     * @throws IOException If the data file cannot be read.
      */
     public ArrayList<Task> loadTasks() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -64,7 +64,7 @@ public class Storage {
     /**
      * Returns warnings generated while loading malformed data lines.
      *
-     * @return an unmodifiable copy of the warnings
+     * @return An unmodifiable copy of the warnings.
      */
     public List<String> getLoadWarnings() {
         return List.copyOf(loadWarnings);
@@ -73,9 +73,9 @@ public class Storage {
     /**
      * Reconstructs one task after validating its saved fields.
      *
-     * @param line one line from the data file
-     * @return the reconstructed task
-     * @throws IllegalArgumentException if the line has an invalid format
+     * @param line One line from the data file.
+     * @return The reconstructed task.
+     * @throws IllegalArgumentException If the line has an invalid format.
      */
     private Task parseTask(String line) {
         String[] fields = line.split(" \\| ", -1);
@@ -88,17 +88,17 @@ public class Storage {
 
         int expectedFieldCount;
         switch (fields[0]) {
-        case "T":
-            expectedFieldCount = 3;
-            break;
-        case "D":
-            expectedFieldCount = 4;
-            break;
-        case "E":
-            expectedFieldCount = 5;
-            break;
-        default:
-            throw new IllegalArgumentException("unknown task type '" + fields[0] + "'");
+            case "T":
+                expectedFieldCount = 3;
+                break;
+            case "D":
+                expectedFieldCount = 4;
+                break;
+            case "E":
+                expectedFieldCount = 5;
+                break;
+            default:
+                throw new IllegalArgumentException("unknown task type '" + fields[0] + "'");
         }
 
         if (fields.length != expectedFieldCount) {
@@ -113,17 +113,17 @@ public class Storage {
 
         Task task;
         switch (fields[0]) {
-        case "T":
-            task = new Todo(fields[2]);
-            break;
-        case "D":
-            task = createDeadline(fields);
-            break;
-        case "E":
-            task = createEvent(fields);
-            break;
-        default:
-            throw new AssertionError("Task type was validated before task creation");
+            case "T":
+                task = new Todo(fields[2]);
+                break;
+            case "D":
+                task = createDeadline(fields);
+                break;
+            case "E":
+                task = createEvent(fields);
+                break;
+            default:
+                throw new AssertionError("Task type was validated before task creation");
         }
 
         if (fields[1].equals("1")) {
@@ -160,8 +160,8 @@ public class Storage {
     /**
      * Replaces the data file with the current tasks, creating its directory if needed.
      *
-     * @param tasks tasks to save
-     * @throws IOException if the tasks cannot be written
+     * @param tasks Tasks to save.
+     * @throws IOException If the tasks cannot be written.
      */
     public void saveTasks(List<Task> tasks) throws IOException {
         Path parentDirectory = filePath.getParent();
