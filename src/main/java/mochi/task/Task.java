@@ -21,26 +21,44 @@ public class Task {
         }
     }
 
+    /** Description shown to the user and stored in the data file. */
     protected String description;
     private TaskStatus status;
 
+    /**
+     * Creates an incomplete task with the given description.
+     *
+     * @param description description of the task
+     */
     public Task(String description) {
         this.description = description;
         this.status = TaskStatus.NOT_DONE;
     }
 
+    /**
+     * Returns the icon representing whether this task is complete.
+     *
+     * @return {@code X} if complete, or a space otherwise
+     */
     public String getStatusIcon() {
         return status.getIcon();
     }
 
+    /**
+     * Returns the description of this task.
+     *
+     * @return task description
+     */
     public String getDescription() {
         return description;
     }
 
+    /** Marks this task as complete. */
     public void mark() {
         status = TaskStatus.DONE;
     }
 
+    /** Marks this task as incomplete. */
     public void unmark() {
         status = TaskStatus.NOT_DONE;
     }
@@ -65,6 +83,11 @@ public class Task {
                 + " | " + description;
     }
 
+    /**
+     * Returns this task in its user-facing display format.
+     *
+     * @return formatted task description and completion status
+     */
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

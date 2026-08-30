@@ -14,12 +14,27 @@ import mochi.task.Todo;
  * Converts raw user input into commands that Mochi can execute.
  */
 public final class Parser {
-    /** Identifies the action represented by a parsed command. */
+    /**
+     * Identifies the action represented by a parsed command.
+     */
     public enum CommandType {
-        ADD, DELETE, MARK, UNMARK, LIST, BYE
+        /** Adds a new task. */
+        ADD,
+        /** Deletes an existing task. */
+        DELETE,
+        /** Marks an existing task as complete. */
+        MARK,
+        /** Marks an existing task as incomplete. */
+        UNMARK,
+        /** Displays all tasks. */
+        LIST,
+        /** Exits Mochi. */
+        BYE
     }
 
-    /** Contains the action and argument produced by parsing one user command. */
+    /**
+     * Contains the action and argument produced by parsing one user command.
+     */
     public static final class Command {
         private final CommandType type;
         private final Task task;
@@ -31,14 +46,29 @@ public final class Parser {
             this.taskNumber = taskNumber;
         }
 
+        /**
+         * Returns the action represented by this command.
+         *
+         * @return command type
+         */
         public CommandType getType() {
             return type;
         }
 
+        /**
+         * Returns the task created by an add command.
+         *
+         * @return task to add, or {@code null} when the command does not add a task
+         */
         public Task getTask() {
             return task;
         }
 
+        /**
+         * Returns the one-based task number used by a task operation.
+         *
+         * @return task number, or {@code 0} when the command does not target a task
+         */
         public int getTaskNumber() {
             return taskNumber;
         }
