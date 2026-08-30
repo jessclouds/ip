@@ -1,4 +1,5 @@
 package mochi;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -9,7 +10,7 @@ import java.util.Locale;
  * Parses date-time input and formats date-times for display and storage.
  */
 public final class DateTimeUtil {
-    /** Describes the date-time format accepted in user commands. */
+    /** Description of the date-time format accepted in user commands. */
     public static final String INPUT_FORMAT_DESCRIPTION = "yyyy-MM-dd HHmm";
 
     private static final DateTimeFormatter INPUT_FORMATTER = new DateTimeFormatterBuilder()
@@ -25,8 +26,8 @@ public final class DateTimeUtil {
     /**
      * Parses a date-time in the command and storage format.
      *
-     * @param value date-time text using {@code yyyy-MM-dd HHmm}
-     * @return parsed date-time
+     * @param value Date-time text using {@code yyyy-MM-dd HHmm}.
+     * @return Parsed date-time.
      */
     public static LocalDateTime parse(String value) {
         return LocalDateTime.parse(value, INPUT_FORMATTER);
@@ -35,8 +36,8 @@ public final class DateTimeUtil {
     /**
      * Formats a date-time for the human-readable task display.
      *
-     * @param dateTime date-time to format
-     * @return date-time such as {@code Dec 02 2019, 6:00 PM}
+     * @param dateTime Date-time to format.
+     * @return Date-time such as {@code Dec 02 2019, 6:00 PM}.
      */
     public static String formatForDisplay(LocalDateTime dateTime) {
         return dateTime.format(DISPLAY_FORMATTER);
@@ -45,8 +46,8 @@ public final class DateTimeUtil {
     /**
      * Formats a date-time for reliable parsing from the data file.
      *
-     * @param dateTime date-time to format
-     * @return date-time using {@code yyyy-MM-dd HHmm}
+     * @param dateTime Date-time to format.
+     * @return Date-time using {@code yyyy-MM-dd HHmm}.
      */
     public static String formatForStorage(LocalDateTime dateTime) {
         return dateTime.format(INPUT_FORMATTER);

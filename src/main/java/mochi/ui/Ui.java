@@ -20,21 +20,25 @@ public class Ui {
 
     private final Scanner scanner;
 
-    /** Creates a console user interface that reads from standard input. */
+    /**
+     * Creates a console user interface that reads from standard input.
+     */
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
 
     /**
-     * Reads the next command entered by the user.
+     * Returns the next command entered by the user.
      *
-     * @return trimmed command text
+     * @return The trimmed command text.
      */
     public String readCommand() {
         return scanner.nextLine().trim();
     }
 
-    /** Displays Mochi's greeting and banner. */
+    /**
+     * Shows Mochi's greeting and banner.
+     */
     public void showWelcome() {
         System.out.println(SEPARATOR);
         System.out.print(BANNER);
@@ -43,16 +47,18 @@ public class Ui {
         System.out.println(SEPARATOR);
     }
 
-    /** Displays a separator between responses. */
+    /**
+     * Shows a separator between responses.
+     */
     public void showSeparator() {
         System.out.println(SEPARATOR);
     }
 
     /**
-     * Displays confirmation that a task was added.
+     * Shows confirmation that a task was added.
      *
-     * @param task task that was added
-     * @param taskCount number of tasks after the addition
+     * @param task Task that was added.
+     * @param taskCount Number of tasks after the addition.
      */
     public void showTaskAdded(Task task, int taskCount) {
         System.out.println("Got it. I've added this task:");
@@ -62,10 +68,10 @@ public class Ui {
     }
 
     /**
-     * Displays confirmation that a task was deleted.
+     * Shows confirmation that a task was deleted.
      *
-     * @param task task that was deleted
-     * @param taskCount number of tasks after the deletion
+     * @param task Task that was deleted.
+     * @param taskCount Number of tasks after the deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
         System.out.println("Noted. I've removed this task:");
@@ -75,9 +81,9 @@ public class Ui {
     }
 
     /**
-     * Displays confirmation that a task was marked complete.
+     * Shows confirmation that a task was marked complete.
      *
-     * @param task task that was marked
+     * @param task Task that was marked.
      */
     public void showTaskMarked(Task task) {
         System.out.println("Nice! I've marked this task as done:");
@@ -86,9 +92,9 @@ public class Ui {
     }
 
     /**
-     * Displays confirmation that a task was marked incomplete.
+     * Shows confirmation that a task was marked incomplete.
      *
-     * @param task task that was unmarked
+     * @param task Task that was unmarked.
      */
     public void showTaskUnmarked(Task task) {
         System.out.println("OK, I've marked this task as not done yet:");
@@ -97,9 +103,9 @@ public class Ui {
     }
 
     /**
-     * Displays every task with its one-based task number.
+     * Shows every task with its one-based task number.
      *
-     * @param tasks tasks to display
+     * @param tasks Tasks to display.
      */
     public void showTaskList(TaskList tasks) {
         System.out.println("Here are the tasks in your list:");
@@ -109,38 +115,44 @@ public class Ui {
         showSeparator();
     }
 
-    /** Displays Mochi's farewell message. */
+    /**
+     * Shows Mochi's farewell message.
+     */
     public void showGoodbye() {
         System.out.println("Bye. Hope to see you again soon!");
         showSeparator();
     }
 
     /**
-     * Displays an invalid-command error.
+     * Shows an invalid-command error.
      *
-     * @param error error to display
+     * @param error Error to display.
      */
     public void showError(MochiException error) {
         System.out.println(error);
         showSeparator();
     }
 
-    /** Displays a message when the data file cannot be loaded. */
+    /**
+     * Shows a message when the data file cannot be loaded.
+     */
     public void showLoadingError() {
         System.out.println(
                 "OOPS!!! I couldn't read the data file. Starting with an empty task list.");
     }
 
     /**
-     * Displays a warning about one malformed line in the data file.
+     * Shows a warning about one malformed line in the data file.
      *
-     * @param warning warning text to display
+     * @param warning Warning text to display.
      */
     public void showLoadingWarning(String warning) {
         System.out.println("WARNING: " + warning);
     }
 
-    /** Displays a message when the task list cannot be saved. */
+    /**
+     * Shows a message when the task list cannot be saved.
+     */
     public void showSavingError() {
         System.out.println("OOPS!!! I couldn't save the task list to the data file.");
     }

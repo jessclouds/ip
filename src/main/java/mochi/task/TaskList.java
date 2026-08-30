@@ -1,7 +1,9 @@
 package mochi.task;
-import mochi.MochiException;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import mochi.MochiException;
 
 /**
  * Owns the task collection and provides operations that use user-facing task numbers.
@@ -9,7 +11,9 @@ import java.util.List;
 public class TaskList {
     private final ArrayList<Task> tasks;
 
-    /** Creates an empty task list. */
+    /**
+     * Creates an empty task list.
+     */
     public TaskList() {
         this.tasks = new ArrayList<>();
     }
@@ -17,7 +21,7 @@ public class TaskList {
     /**
      * Creates a task list containing the supplied tasks.
      *
-     * @param tasks initial tasks to copy into the list
+     * @param tasks Initial tasks to copy into the list.
      */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
@@ -26,7 +30,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task Task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -35,9 +39,9 @@ public class TaskList {
     /**
      * Deletes and returns the task with the given one-based number.
      *
-     * @param taskNumber one-based position of the task
-     * @return deleted task
-     * @throws MochiException if the task number is outside the list
+     * @param taskNumber One-based position of the task.
+     * @return The deleted task.
+     * @throws MochiException If the task number is outside the list.
      */
     public Task delete(int taskNumber) throws MochiException {
         validateTaskNumber(taskNumber);
@@ -47,9 +51,9 @@ public class TaskList {
     /**
      * Marks and returns the task with the given one-based number.
      *
-     * @param taskNumber one-based position of the task
-     * @return marked task
-     * @throws MochiException if the task number is outside the list
+     * @param taskNumber One-based position of the task.
+     * @return The marked task.
+     * @throws MochiException If the task number is outside the list.
      */
     public Task mark(int taskNumber) throws MochiException {
         Task task = get(taskNumber);
@@ -60,9 +64,9 @@ public class TaskList {
     /**
      * Unmarks and returns the task with the given one-based number.
      *
-     * @param taskNumber one-based position of the task
-     * @return unmarked task
-     * @throws MochiException if the task number is outside the list
+     * @param taskNumber One-based position of the task.
+     * @return The unmarked task.
+     * @throws MochiException If the task number is outside the list.
      */
     public Task unmark(int taskNumber) throws MochiException {
         Task task = get(taskNumber);
@@ -73,9 +77,9 @@ public class TaskList {
     /**
      * Returns the task with the given one-based number.
      *
-     * @param taskNumber one-based position of the task
-     * @return selected task
-     * @throws MochiException if the task number is outside the list
+     * @param taskNumber One-based position of the task.
+     * @return The selected task.
+     * @throws MochiException If the task number is outside the list.
      */
     public Task get(int taskNumber) throws MochiException {
         validateTaskNumber(taskNumber);
@@ -85,7 +89,7 @@ public class TaskList {
     /**
      * Returns the number of tasks in the list.
      *
-     * @return task count
+     * @return The task count.
      */
     public int size() {
         return tasks.size();
@@ -94,7 +98,7 @@ public class TaskList {
     /**
      * Returns a read-only snapshot for display or storage.
      *
-     * @return immutable copy of the tasks
+     * @return An immutable copy of the tasks.
      */
     public List<Task> getTasks() {
         return List.copyOf(tasks);

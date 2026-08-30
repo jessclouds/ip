@@ -7,15 +7,14 @@ import mochi.DateTimeUtil;
 /**
  * Represents a task that must be completed by a specific deadline.
  */
-
 public class Deadline extends Task {
     private final LocalDateTime by;
 
     /**
      * Creates a deadline with the given description and due date-time.
      *
-     * @param description description of the deadline
-     * @param by date and time by which the task should be completed
+     * @param description Description of the deadline.
+     * @param by Date and time by which the task should be completed.
      */
     public Deadline(String description, LocalDateTime by) {
         super(description);
@@ -25,7 +24,7 @@ public class Deadline extends Task {
     /**
      * Converts this deadline into the line format used in the data file.
      *
-     * @return serialized deadline
+     * @return Serialized deadline.
      */
     @Override
     public String toDataString() {
@@ -35,7 +34,7 @@ public class Deadline extends Task {
     /**
      * Returns this deadline in its user-facing display format.
      *
-     * @return formatted deadline
+     * @return Formatted deadline.
      */
     @Override
     public String toString() {

@@ -49,7 +49,7 @@ public final class Parser {
         /**
          * Returns the action represented by this command.
          *
-         * @return command type
+         * @return The command type.
          */
         public CommandType getType() {
             return type;
@@ -58,7 +58,7 @@ public final class Parser {
         /**
          * Returns the task created by an add command.
          *
-         * @return task to add, or {@code null} when the command does not add a task
+         * @return The task to add, or {@code null} when the command does not add a task.
          */
         public Task getTask() {
             return task;
@@ -67,7 +67,7 @@ public final class Parser {
         /**
          * Returns the one-based task number used by a task operation.
          *
-         * @return task number, or {@code 0} when the command does not target a task
+         * @return The task number, or {@code 0} when the command does not target a task.
          */
         public int getTaskNumber() {
             return taskNumber;
@@ -80,9 +80,9 @@ public final class Parser {
     /**
      * Parses one line of user input.
      *
-     * @param input raw input from the user
-     * @return a command containing the requested action and argument
-     * @throws MochiException if the command or its arguments are invalid
+     * @param input Raw input from the user.
+     * @return A command containing the requested action and argument.
+     * @throws MochiException If the command or its arguments are invalid.
      */
     public static Command parse(String input) throws MochiException {
         String command = input.trim();
@@ -101,20 +101,20 @@ public final class Parser {
 
         String arguments = words[1].trim();
         switch (commandWord) {
-        case "mark":
-            return new Command(CommandType.MARK, null, parseTaskNumber(arguments));
-        case "unmark":
-            return new Command(CommandType.UNMARK, null, parseTaskNumber(arguments));
-        case "delete":
-            return new Command(CommandType.DELETE, null, parseTaskNumber(arguments));
-        case "todo":
-            return new Command(CommandType.ADD, new Todo(arguments), 0);
-        case "deadline":
-            return new Command(CommandType.ADD, parseDeadline(arguments), 0);
-        case "event":
-            return new Command(CommandType.ADD, parseEvent(arguments), 0);
-        default:
-            throw unknownCommandException();
+            case "mark":
+                return new Command(CommandType.MARK, null, parseTaskNumber(arguments));
+            case "unmark":
+                return new Command(CommandType.UNMARK, null, parseTaskNumber(arguments));
+            case "delete":
+                return new Command(CommandType.DELETE, null, parseTaskNumber(arguments));
+            case "todo":
+                return new Command(CommandType.ADD, new Todo(arguments), 0);
+            case "deadline":
+                return new Command(CommandType.ADD, parseDeadline(arguments), 0);
+            case "event":
+                return new Command(CommandType.ADD, parseEvent(arguments), 0);
+            default:
+                throw unknownCommandException();
         }
     }
 

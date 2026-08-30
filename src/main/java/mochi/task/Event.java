@@ -14,10 +14,10 @@ public class Event extends Task {
     /**
      * Creates an event occurring between the given date-times.
      *
-     * @param description description of the event
-     * @param from start date and time
-     * @param to end date and time
-     * @throws IllegalArgumentException if the event does not end after it starts
+     * @param description Description of the event.
+     * @param from Start date and time.
+     * @param to End date and time.
+     * @throws IllegalArgumentException If the event does not end after it starts.
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
@@ -31,7 +31,7 @@ public class Event extends Task {
     /**
      * Converts this event into the line format used in the data file.
      *
-     * @return serialized event
+     * @return Serialized event.
      */
     @Override
     public String toDataString() {
@@ -42,7 +42,7 @@ public class Event extends Task {
     /**
      * Returns this event in its user-facing display format.
      *
-     * @return formatted event
+     * @return Formatted event.
      */
     @Override
     public String toString() {
