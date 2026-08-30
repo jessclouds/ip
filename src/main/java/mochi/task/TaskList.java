@@ -104,6 +104,18 @@ public class TaskList {
         return List.copyOf(tasks);
     }
 
+    /**
+     * Returns tasks whose descriptions contain the given keyword.
+     *
+     * @param keyword Keyword to search for.
+     * @return Matching tasks in their original order.
+     */
+    public List<Task> find(String keyword) {
+        return tasks.stream()
+                .filter(task -> task.getDescription().contains(keyword))
+                .toList();
+    }
+
     private void validateTaskNumber(int taskNumber) throws MochiException {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new MochiException("There is no task numbered " + taskNumber + ".");

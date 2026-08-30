@@ -46,6 +46,11 @@ OK, I've marked this task as not done yet:
   [D][ ] return book (by: Jun 06 2026, 6:00 PM)
 ____________________________________________________________
 ____________________________________________________________
+Here are the matching tasks in your list:
+1.[T][X] read book
+2.[D][ ] return book (by: Jun 06 2026, 6:00 PM)
+____________________________________________________________
+____________________________________________________________
 Noted. I've removed this task:
   [T][ ] temporary task
 Now you have 3 tasks in the list.

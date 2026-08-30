@@ -1,5 +1,6 @@
 package mochi.ui;
 
+import java.util.List;
 import java.util.Scanner;
 
 import mochi.MochiException;
@@ -111,6 +112,19 @@ public class Ui {
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println((i + 1) + "." + tasks.getTasks().get(i));
+        }
+        showSeparator();
+    }
+
+    /**
+     * Shows all tasks that match a search keyword.
+     *
+     * @param matchingTasks Tasks whose descriptions contain the keyword.
+     */
+    public void showMatchingTasks(List<Task> matchingTasks) {
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            System.out.println((i + 1) + "." + matchingTasks.get(i));
         }
         showSeparator();
     }

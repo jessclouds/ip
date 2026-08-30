@@ -41,6 +41,16 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_findCommand_returnsTypeAndKeyword() throws MochiException {
+        Parser.Command command = Parser.parse("find return book");
+
+        assertAll(
+                () -> assertEquals(Parser.CommandType.FIND, command.getType()),
+                () -> assertEquals("return book", command.getKeyword())
+        );
+    }
+
+    @Test
     public void parse_addCommands_returnsCorrectTaskTypes() throws MochiException {
         Parser.Command todoCommand = Parser.parse("todo read book");
         Parser.Command deadlineCommand =
@@ -71,7 +81,8 @@ public class ParserTest {
                 () -> assertThrows(MochiException.class, () -> Parser.parse("event")),
                 () -> assertThrows(MochiException.class, () -> Parser.parse("mark")),
                 () -> assertThrows(MochiException.class, () -> Parser.parse("unmark")),
-                () -> assertThrows(MochiException.class, () -> Parser.parse("delete"))
+                () -> assertThrows(MochiException.class, () -> Parser.parse("delete")),
+                () -> assertThrows(MochiException.class, () -> Parser.parse("find"))
         );
     }
 

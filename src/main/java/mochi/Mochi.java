@@ -96,6 +96,9 @@ public class Mochi {
                 saveTasks();
                 ui.showTaskUnmarked(unmarkedTask);
                 break;
+            case FIND:
+                ui.showMatchingTasks(tasks.find(command.getKeyword()));
+                break;
             case BYE:
                 throw new AssertionError("The bye command is handled before execution");
             default:
