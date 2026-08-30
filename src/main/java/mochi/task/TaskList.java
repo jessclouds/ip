@@ -1,7 +1,9 @@
 package mochi.task;
-import mochi.MochiException;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import mochi.MochiException;
 
 /**
  * Owns the task collection and provides operations that use user-facing task numbers.
@@ -56,6 +58,18 @@ public class TaskList {
     /** Returns a read-only snapshot for display or storage. */
     public List<Task> getTasks() {
         return List.copyOf(tasks);
+    }
+
+    /**
+     * Returns tasks whose descriptions contain the given keyword.
+     *
+     * @param keyword Keyword to search for.
+     * @return Matching tasks in their original order.
+     */
+    public List<Task> find(String keyword) {
+        return tasks.stream()
+                .filter(task -> task.getDescription().contains(keyword))
+                .toList();
     }
 
     private void validateTaskNumber(int taskNumber) throws MochiException {

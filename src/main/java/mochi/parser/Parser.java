@@ -16,7 +16,7 @@ import mochi.task.Todo;
 public final class Parser {
     /** Identifies the action represented by a parsed command. */
     public enum CommandType {
-        ADD, DELETE, MARK, UNMARK, LIST, BYE
+        ADD, DELETE, MARK, UNMARK, LIST, FIND, BYE
     }
 
     /** Contains the action and argument produced by parsing one user command. */
@@ -24,11 +24,13 @@ public final class Parser {
         private final CommandType type;
         private final Task task;
         private final int taskNumber;
+        private final String keyword;
 
-        private Command(CommandType type, Task task, int taskNumber) {
+        private Command(CommandType type, Task task, int taskNumber, String keyword) {
             this.type = type;
             this.task = task;
             this.taskNumber = taskNumber;
+            this.keyword = keyword;
         }
 
         public CommandType getType() {
@@ -41,6 +43,15 @@ public final class Parser {
 
         public int getTaskNumber() {
             return taskNumber;
+        }
+
+        /**
+         * Returns the keyword supplied to a find command.
+         *
+         * @return Keyword to search for, or {@code null} for other commands.
+         */
+        public String getKeyword() {
+            return keyword;
         }
     }
 
@@ -57,10 +68,10 @@ public final class Parser {
     public static Command parse(String input) throws MochiException {
         String command = input.trim();
         if (command.equals("bye")) {
-            return new Command(CommandType.BYE, null, 0);
+            return new Command(CommandType.BYE, null, 0, null);
         }
         if (command.equals("list")) {
-            return new Command(CommandType.LIST, null, 0);
+            return new Command(CommandType.LIST, null, 0, null);
         }
 
         String[] words = command.split("\\s+", 2);
@@ -72,17 +83,19 @@ public final class Parser {
         String arguments = words[1].trim();
         switch (commandWord) {
         case "mark":
-            return new Command(CommandType.MARK, null, parseTaskNumber(arguments));
+            return new Command(CommandType.MARK, null, parseTaskNumber(arguments), null);
         case "unmark":
-            return new Command(CommandType.UNMARK, null, parseTaskNumber(arguments));
+            return new Command(CommandType.UNMARK, null, parseTaskNumber(arguments), null);
         case "delete":
-            return new Command(CommandType.DELETE, null, parseTaskNumber(arguments));
+            return new Command(CommandType.DELETE, null, parseTaskNumber(arguments), null);
         case "todo":
-            return new Command(CommandType.ADD, new Todo(arguments), 0);
+            return new Command(CommandType.ADD, new Todo(arguments), 0, null);
         case "deadline":
-            return new Command(CommandType.ADD, parseDeadline(arguments), 0);
+            return new Command(CommandType.ADD, parseDeadline(arguments), 0, null);
         case "event":
-            return new Command(CommandType.ADD, parseEvent(arguments), 0);
+            return new Command(CommandType.ADD, parseEvent(arguments), 0, null);
+        case "find":
+            return new Command(CommandType.FIND, null, 0, arguments);
         default:
             throw unknownCommandException();
         }
@@ -153,6 +166,9 @@ public final class Parser {
                 || commandWord.equals("unmark")
                 || commandWord.equals("delete")) {
             return new MochiException("Please specify a task number to " + commandWord + ".");
+        }
+        if (commandWord.equals("find")) {
+            return new MochiException("Please specify a keyword to find.");
         }
         return unknownCommandException();
     }
