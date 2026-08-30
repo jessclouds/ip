@@ -9,6 +9,7 @@ import java.util.Locale;
  * Parses date-time input and formats date-times for display and storage.
  */
 public final class DateTimeUtil {
+    /** Describes the date-time format accepted in user commands. */
     public static final String INPUT_FORMAT_DESCRIPTION = "yyyy-MM-dd HHmm";
 
     private static final DateTimeFormatter INPUT_FORMATTER = new DateTimeFormatterBuilder()

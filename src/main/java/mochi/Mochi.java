@@ -21,7 +21,11 @@ public class Mochi {
     private final List<String> loadingWarnings;
     private final boolean loadingFailed;
 
-    /** Creates Mochi and loads its saved tasks. */
+    /**
+     * Creates Mochi and loads its saved tasks.
+     *
+     * @param filePath path of the file used to load and save tasks
+     */
     public Mochi(Path filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -43,7 +47,9 @@ public class Mochi {
         loadingFailed = loadFailed;
     }
 
-    /** Runs the command loop until the user exits. */
+    /**
+     * Runs the command loop until the user exits.
+     */
     public void run() {
         ui.showWelcome();
         showLoadingMessages();
@@ -114,6 +120,11 @@ public class Mochi {
         }
     }
 
+    /**
+     * Starts Mochi using the default task data file.
+     *
+     * @param args command-line arguments, which are not used
+     */
     public static void main(String[] args) {
         new Mochi(Path.of("data", "duke.txt")).run();
     }
