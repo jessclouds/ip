@@ -56,95 +56,115 @@ public class Ui {
     }
 
     /**
-     * Shows confirmation that a task was added.
+     * Shows a response followed by a separator.
+     *
+     * @param response Response to display.
+     */
+    public void showResponse(String response) {
+        System.out.println(response);
+        showSeparator();
+    }
+
+    /**
+     * Returns confirmation that a task was added.
      *
      * @param task Task that was added.
      * @param taskCount Number of tasks after the addition.
+     * @return Confirmation of the addition.
      */
-    public void showTaskAdded(Task task, int taskCount) {
-        System.out.println("Got it. I've added this task:");
-        System.out.println("  " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
-        showSeparator();
+    public String getTaskAddedResponse(Task task, int taskCount) {
+        return "Got it. I've added this task:" + System.lineSeparator()
+                + "  " + task + System.lineSeparator()
+                + "Now you have " + taskCount + " tasks in the list.";
     }
 
     /**
-     * Shows confirmation that a task was deleted.
+     * Returns confirmation that a task was deleted.
      *
      * @param task Task that was deleted.
      * @param taskCount Number of tasks after the deletion.
+     * @return Confirmation of the deletion.
      */
-    public void showTaskDeleted(Task task, int taskCount) {
-        System.out.println("Noted. I've removed this task:");
-        System.out.println("  " + task);
-        System.out.println("Now you have " + taskCount + " tasks in the list.");
-        showSeparator();
+    public String getTaskDeletedResponse(Task task, int taskCount) {
+        return "Noted. I've removed this task:" + System.lineSeparator()
+                + "  " + task + System.lineSeparator()
+                + "Now you have " + taskCount + " tasks in the list.";
     }
 
     /**
-     * Shows confirmation that a task was marked complete.
+     * Returns confirmation that a task was marked complete.
      *
      * @param task Task that was marked.
+     * @return Confirmation of the status change.
      */
-    public void showTaskMarked(Task task) {
-        System.out.println("Nice! I've marked this task as done:");
-        System.out.println("  " + task);
-        showSeparator();
+    public String getTaskMarkedResponse(Task task) {
+        return "Nice! I've marked this task as done:" + System.lineSeparator()
+                + "  " + task;
     }
 
     /**
-     * Shows confirmation that a task was marked incomplete.
+     * Returns confirmation that a task was marked incomplete.
      *
      * @param task Task that was unmarked.
+     * @return Confirmation of the status change.
      */
-    public void showTaskUnmarked(Task task) {
-        System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println("  " + task);
-        showSeparator();
+    public String getTaskUnmarkedResponse(Task task) {
+        return "OK, I've marked this task as not done yet:" + System.lineSeparator()
+                + "  " + task;
     }
 
     /**
-     * Shows every task with its one-based task number.
+     * Returns every task with its one-based task number.
      *
      * @param tasks Tasks to display.
+     * @return Formatted task list.
      */
-    public void showTaskList(TaskList tasks) {
-        System.out.println("Here are the tasks in your list:");
+    public String getTaskListResponse(TaskList tasks) {
+        StringBuilder response = new StringBuilder("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + "." + tasks.getTasks().get(i));
+            response.append(System.lineSeparator())
+                    .append(i + 1)
+                    .append(".")
+                    .append(tasks.getTasks().get(i));
         }
-        showSeparator();
+        return response.toString();
     }
 
     /**
-     * Shows all tasks that match a search keyword.
+     * Returns all tasks that match a search keyword.
      *
      * @param matchingTasks Tasks whose descriptions contain the keyword.
+     * @return Formatted list of matching tasks.
      */
-    public void showMatchingTasks(List<Task> matchingTasks) {
-        System.out.println("Here are the matching tasks in your list:");
+    public String getMatchingTasksResponse(List<Task> matchingTasks) {
+        StringBuilder response = new StringBuilder(
+                "Here are the matching tasks in your list:");
         for (int i = 0; i < matchingTasks.size(); i++) {
-            System.out.println((i + 1) + "." + matchingTasks.get(i));
+            response.append(System.lineSeparator())
+                    .append(i + 1)
+                    .append(".")
+                    .append(matchingTasks.get(i));
         }
-        showSeparator();
+        return response.toString();
     }
 
     /**
-     * Shows Mochi's farewell message.
+     * Returns Mochi's farewell message.
+     *
+     * @return Farewell message.
      */
-    public void showGoodbye() {
-        System.out.println("Bye. Hope to see you again soon!");
-        showSeparator();
+    public String getGoodbyeResponse() {
+        return "Bye. Hope to see you again soon!";
     }
 
     /**
-     * Shows an invalid-command error.
+     * Returns an invalid-command error.
      *
      * @param error Error to display.
+     * @return Error message.
      */
-    public void showError(MochiException error) {
-        System.out.println(error);
-        showSeparator();
+    public String getErrorResponse(MochiException error) {
+        return error.toString();
     }
 
     /**
@@ -165,9 +185,11 @@ public class Ui {
     }
 
     /**
-     * Shows a message when the task list cannot be saved.
+     * Returns a message when the task list cannot be saved.
+     *
+     * @return Saving error message.
      */
-    public void showSavingError() {
-        System.out.println("OOPS!!! I couldn't save the task list to the data file.");
+    public String getSavingErrorResponse() {
+        return "OOPS!!! I couldn't save the task list to the data file.";
     }
 }
