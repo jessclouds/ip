@@ -116,18 +116,11 @@ public class Ui {
     /**
      * Returns every task with its one-based task number.
      *
-     * @param tasks Tasks to display.
+     * @param taskList Tasks to display.
      * @return Formatted task list.
      */
-    public String getTaskListResponse(TaskList tasks) {
-        StringBuilder response = new StringBuilder("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            response.append(System.lineSeparator())
-                    .append(i + 1)
-                    .append(".")
-                    .append(tasks.getTasks().get(i));
-        }
-        return response.toString();
+    public String getTaskListResponse(TaskList taskList) {
+        return formatTaskList("Here are the tasks in your list:", taskList.getTasks());
     }
 
     /**
@@ -137,13 +130,19 @@ public class Ui {
      * @return Formatted list of matching tasks.
      */
     public String getMatchingTasksResponse(List<Task> matchingTasks) {
-        StringBuilder response = new StringBuilder(
-                "Here are the matching tasks in your list:");
-        for (int i = 0; i < matchingTasks.size(); i++) {
+        return formatTaskList("Here are the matching tasks in your list:", matchingTasks);
+    }
+
+    /**
+     * Formats a heading followed by tasks numbered from one.
+     */
+    private String formatTaskList(String heading, List<Task> tasks) {
+        StringBuilder response = new StringBuilder(heading);
+        for (int i = 0; i < tasks.size(); i++) {
             response.append(System.lineSeparator())
                     .append(i + 1)
                     .append(".")
-                    .append(matchingTasks.get(i));
+                    .append(tasks.get(i));
         }
         return response.toString();
     }
