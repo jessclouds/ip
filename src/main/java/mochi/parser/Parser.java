@@ -146,6 +146,8 @@ public final class Parser {
             throw new MochiException("Use this format: deadline DESCRIPTION /by DATE.");
         }
         String[] parts = details.split(" /by ", 2);
+        assert parts.length == 2 : "Deadline delimiter check must produce two parts";
+
         String description = parts[0].trim();
         String by = parts[1].trim();
         if (description.isEmpty() || by.isEmpty()) {
@@ -164,11 +166,15 @@ public final class Parser {
             throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
         }
         String[] fromParts = details.split(" /from ", 2);
+        assert fromParts.length == 2 : "Event start delimiter check must produce two parts";
+
         if (!fromParts[1].contains(" /to ")) {
             throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
         }
 
         String[] toParts = fromParts[1].split(" /to ", 2);
+        assert toParts.length == 2 : "Event end delimiter check must produce two parts";
+
         String description = fromParts[0].trim();
         String from = toParts[0].trim();
         String to = toParts[1].trim();

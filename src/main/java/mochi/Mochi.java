@@ -87,10 +87,13 @@ public class Mochi {
     }
 
     private String execute(Parser.Command command) throws MochiException {
+        assert command != null : "Parser must return a command";
+
         switch (command.getType()) {
             case LIST:
                 return ui.getTaskListResponse(tasks);
             case ADD:
+                assert command.getTask() != null : "Add commands must contain a task";
                 tasks.add(command.getTask());
                 return saveTasks() + ui.getTaskAddedResponse(command.getTask(), tasks.size());
             case DELETE:
@@ -103,6 +106,8 @@ public class Mochi {
                 Task unmarkedTask = tasks.unmark(command.getTaskNumber());
                 return saveTasks() + ui.getTaskUnmarkedResponse(unmarkedTask);
             case FIND:
+                assert command.getKeyword() != null && !command.getKeyword().isBlank()
+                        : "Find commands must contain a keyword";
                 return ui.getMatchingTasksResponse(tasks.find(command.getKeyword()));
             case BYE:
                 isExitRequested = true;

@@ -125,6 +125,7 @@ public class Storage {
             default:
                 throw new AssertionError("Task type was validated before task creation");
         }
+        assert task != null : "A validated task type must create a task";
 
         if (fields[1].equals("1")) {
             task.mark();
@@ -136,6 +137,8 @@ public class Storage {
      * Reconstructs a deadline while converting date parsing failures into data warnings.
      */
     private Deadline createDeadline(String[] fields) {
+        assert fields.length == 4 : "A validated deadline must have four fields";
+
         try {
             return new Deadline(fields[2], DateTimeUtil.parse(fields[3]));
         } catch (DateTimeParseException e) {
@@ -148,6 +151,8 @@ public class Storage {
      * Reconstructs an event while converting date parsing failures into data warnings.
      */
     private Event createEvent(String[] fields) {
+        assert fields.length == 5 : "A validated event must have five fields";
+
         try {
             return new Event(fields[2],
                     DateTimeUtil.parse(fields[3]), DateTimeUtil.parse(fields[4]));
