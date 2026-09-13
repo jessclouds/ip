@@ -2,6 +2,8 @@ package mochi.ui;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import mochi.MochiException;
 import mochi.task.Task;
@@ -137,15 +139,11 @@ public class Ui {
      * @return Formatted list of matching tasks.
      */
     public String getMatchingTasksResponse(List<Task> matchingTasks) {
-        StringBuilder response = new StringBuilder(
-                "Here are the matching tasks in your list:");
-        for (int i = 0; i < matchingTasks.size(); i++) {
-            response.append(System.lineSeparator())
-                    .append(i + 1)
-                    .append(".")
-                    .append(matchingTasks.get(i));
-        }
-        return response.toString();
+        String numberedTasks = IntStream.range(0, matchingTasks.size())
+                .mapToObj(index -> System.lineSeparator()
+                        + (index + 1) + "." + matchingTasks.get(index))
+                .collect(Collectors.joining());
+        return "Here are the matching tasks in your list:" + numberedTasks;
     }
 
     /**
