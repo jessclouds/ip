@@ -24,6 +24,9 @@ public class TaskList {
      * @param tasks Initial tasks to copy into the list.
      */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "Initial task list must not be null";
+        assert tasks.stream().noneMatch(task -> task == null) : "Initial task list must not contain null";
+
         this.tasks = new ArrayList<>(tasks);
     }
 
@@ -33,7 +36,11 @@ public class TaskList {
      * @param task Task to add.
      */
     public void add(Task task) {
+        assert task != null : "Task list must not contain null";
+
+        int previousSize = tasks.size();
         tasks.add(task);
+        assert tasks.size() == previousSize + 1 : "Adding a task must increase the list size by one";
     }
 
     /**
@@ -45,7 +52,10 @@ public class TaskList {
      */
     public Task delete(int taskNumber) throws MochiException {
         validateTaskNumber(taskNumber);
-        return tasks.remove(taskNumber - 1);
+        int previousSize = tasks.size();
+        Task deletedTask = tasks.remove(taskNumber - 1);
+        assert tasks.size() == previousSize - 1 : "Deleting a task must decrease the list size by one";
+        return deletedTask;
     }
 
     /**
