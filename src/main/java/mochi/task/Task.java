@@ -23,7 +23,7 @@ public class Task {
     }
 
     /** Description shown to the user and stored in the data file. */
-    protected String description;
+    private final String description;
     private TaskStatus status;
 
     /**
