@@ -20,6 +20,7 @@ public class Mochi {
     private final Ui ui;
     private final List<String> loadingWarnings;
     private final boolean isLoadingFailed;
+    private boolean isExitRequested;
 
     /**
      * Creates Mochi and loads its saved tasks.
@@ -45,6 +46,7 @@ public class Mochi {
         tasks = loadedTasks;
         loadingWarnings = warnings;
         this.isLoadingFailed = isLoadingFailed;
+        isExitRequested = false;
     }
 
     /**
@@ -54,53 +56,57 @@ public class Mochi {
         ui.showWelcome();
         showLoadingMessages();
 
-        while (true) {
+        while (!isExitRequested) {
             String input = ui.readCommand();
             ui.showSeparator();
-
-            try {
-                Parser.Command command = Parser.parse(input);
-                if (command.getType() == Parser.CommandType.BYE) {
-                    ui.showGoodbye();
-                    return;
-                }
-                execute(command);
-            } catch (MochiException e) {
-                ui.showError(e);
-            }
+            ui.showResponse(getResponse(input));
         }
     }
 
-    private void execute(Parser.Command command) throws MochiException {
+    /**
+     * Processes one user command and returns Mochi's response.
+     *
+     * @param input Raw command entered by the user.
+     * @return Mochi's response to the command.
+     */
+    public String getResponse(String input) {
+        try {
+            return execute(Parser.parse(input));
+        } catch (MochiException e) {
+            return ui.getErrorResponse(e);
+        }
+    }
+
+    /**
+     * Returns whether Mochi has received an exit command.
+     *
+     * @return True if the application should exit.
+     */
+    public boolean isExitRequested() {
+        return isExitRequested;
+    }
+
+    private String execute(Parser.Command command) throws MochiException {
         switch (command.getType()) {
             case LIST:
-                ui.showTaskList(tasks);
-                break;
+                return ui.getTaskListResponse(tasks);
             case ADD:
                 tasks.add(command.getTask());
-                saveTasks();
-                ui.showTaskAdded(command.getTask(), tasks.size());
-                break;
+                return saveTasks() + ui.getTaskAddedResponse(command.getTask(), tasks.size());
             case DELETE:
                 Task deletedTask = tasks.delete(command.getTaskNumber());
-                saveTasks();
-                ui.showTaskDeleted(deletedTask, tasks.size());
-                break;
+                return saveTasks() + ui.getTaskDeletedResponse(deletedTask, tasks.size());
             case MARK:
                 Task markedTask = tasks.mark(command.getTaskNumber());
-                saveTasks();
-                ui.showTaskMarked(markedTask);
-                break;
+                return saveTasks() + ui.getTaskMarkedResponse(markedTask);
             case UNMARK:
                 Task unmarkedTask = tasks.unmark(command.getTaskNumber());
-                saveTasks();
-                ui.showTaskUnmarked(unmarkedTask);
-                break;
+                return saveTasks() + ui.getTaskUnmarkedResponse(unmarkedTask);
             case FIND:
-                ui.showMatchingTasks(tasks.find(command.getKeyword()));
-                break;
+                return ui.getMatchingTasksResponse(tasks.find(command.getKeyword()));
             case BYE:
-                throw new AssertionError("The bye command is handled before execution");
+                isExitRequested = true;
+                return ui.getGoodbyeResponse();
             default:
                 throw new AssertionError("Unsupported command type");
         }
@@ -115,11 +121,12 @@ public class Mochi {
         }
     }
 
-    private void saveTasks() {
+    private String saveTasks() {
         try {
             storage.saveTasks(tasks.getTasks());
+            return "";
         } catch (IOException e) {
-            ui.showSavingError();
+            return ui.getSavingErrorResponse() + System.lineSeparator();
         }
     }
 
