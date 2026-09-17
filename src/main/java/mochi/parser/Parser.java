@@ -99,15 +99,16 @@ public final class Parser {
      */
     public static Command parse(String input) throws MochiException {
         String command = input.trim();
-        if (command.equals("bye")) {
+        String[] words = command.split("\\s+", 2);
+        String commandWord = expandAlias(words[0]);
+
+        if (commandWord.equals("bye") && words.length == 1) {
             return new Command(CommandType.BYE, null, 0, null);
         }
-        if (command.equals("list")) {
+        if (commandWord.equals("list") && words.length == 1) {
             return new Command(CommandType.LIST, null, 0, null);
         }
 
-        String[] words = command.split("\\s+", 2);
-        String commandWord = words[0];
         if (words.length < 2) {
             throw missingArgumentException(commandWord);
         }
@@ -130,6 +131,23 @@ public final class Parser {
                 return new Command(CommandType.FIND, null, 0, arguments);
             default:
                 throw unknownCommandException();
+        }
+    }
+
+    private static String expandAlias(String commandWord) {
+        switch (commandWord) {
+            case "t":
+                return "todo";
+            case "d":
+                return "deadline";
+            case "e":
+                return "event";
+            case "l":
+                return "list";
+            case "f":
+                return "find";
+            default:
+                return commandWord;
         }
     }
 
