@@ -3,6 +3,7 @@ package mochi.storage;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -106,5 +107,69 @@ public class StorageTest {
         storage.loadTasks();
 
         assertTrue(storage.getLoadWarnings().isEmpty());
+    }
+
+    @Test
+    public void loadTasks_invalidStructures_skipsEveryInvalidLineWithWarning()
+            throws IOException {
+        Path filePath = tempDirectory.resolve("duke.txt");
+        Files.write(filePath, List.of(
+                "missing fields",
+                "T | 2 | invalid status",
+                "T | 0 | too | many",
+                "T | 0 | ",
+                "D | 0 | deadline | invalid date",
+                "E | 0 | meeting | 2026-08-06 1400 | invalid date",
+                "E | 0 | meeting | 2026-08-06 1600 | 2026-08-06 1400",
+                "X | 0 | unknown type"
+        ), StandardCharsets.UTF_8);
+        Storage storage = new Storage(filePath);
+
+        ArrayList<Task> tasks = storage.loadTasks();
+
+        assertAll(
+                () -> assertTrue(tasks.isEmpty()),
+                () -> assertEquals(8, storage.getLoadWarnings().size()),
+                () -> assertTrue(storage.getLoadWarnings().get(0).contains("line 1")),
+                () -> assertTrue(storage.getLoadWarnings().get(7).contains("unknown task type"))
+        );
+    }
+
+    @Test
+    public void getLoadWarnings_returnedListIsUnmodifiable() throws IOException {
+        Path filePath = tempDirectory.resolve("duke.txt");
+        Files.writeString(filePath, "invalid line", StandardCharsets.UTF_8);
+        Storage storage = new Storage(filePath);
+        storage.loadTasks();
+
+        List<String> warnings = storage.getLoadWarnings();
+
+        assertThrows(UnsupportedOperationException.class, warnings::clear);
+        assertEquals(1, storage.getLoadWarnings().size());
+    }
+
+    @Test
+    public void saveAndLoadTasks_allTaskTypes_roundTripsData() throws IOException {
+        Path filePath = tempDirectory.resolve("data").resolve("duke.txt");
+        Storage storage = new Storage(filePath);
+        Todo todo = new Todo("read book");
+        todo.mark();
+        Deadline deadline = new Deadline(
+                "submit report", java.time.LocalDateTime.of(2026, 6, 6, 18, 0));
+        Event event = new Event(
+                "meeting",
+                java.time.LocalDateTime.of(2026, 8, 6, 14, 0),
+                java.time.LocalDateTime.of(2026, 8, 6, 16, 0));
+
+        storage.saveTasks(List.of(todo, deadline, event));
+        ArrayList<Task> loadedTasks = storage.loadTasks();
+
+        assertEquals(List.of(
+                "T | 1 | read book",
+                "D | 0 | submit report | 2026-06-06 1800",
+                "E | 0 | meeting | 2026-08-06 1400 | 2026-08-06 1600"
+        ), Files.readAllLines(filePath, StandardCharsets.UTF_8));
+        assertEquals(List.of(todo.toString(), deadline.toString(), event.toString()),
+                loadedTasks.stream().map(Task::toString).toList());
     }
 }
