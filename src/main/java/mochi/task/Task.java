@@ -32,6 +32,9 @@ public class Task {
      * @param description Description of the task.
      */
     public Task(String description) {
+        assert description != null : "Task description must not be null";
+        assert !description.isBlank() : "Task description must not be blank";
+
         this.description = description;
         this.status = TaskStatus.NOT_DONE;
     }
@@ -84,6 +87,10 @@ public class Task {
      * @return The task type, completion status, and description.
      */
     protected String formatDataString(String taskType) {
+        assert taskType != null
+                && (taskType.equals("T") || taskType.equals("D") || taskType.equals("E"))
+                : "Task type must use a supported storage code";
+
         return taskType + " | " + (status == TaskStatus.DONE ? "1" : "0")
                 + " | " + description;
     }
