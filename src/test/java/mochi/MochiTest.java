@@ -3,6 +3,7 @@ package mochi;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -52,6 +53,49 @@ public class MochiTest {
         Mochi mochi = new Mochi(filePath);
 
         assertTrue(mochi.getResponse("list").contains("1.[T][X] loaded task"));
+    }
+
+    @Test
+    public void getLoadingMessages_missingDataFile_returnsEmptyList() {
+        Mochi mochi = new Mochi(tempDirectory.resolve("missing.txt"));
+
+        assertTrue(mochi.getLoadingMessages().isEmpty());
+    }
+
+    @Test
+    public void getLoadingMessages_malformedSavedLine_returnsWarningAndLoadsValidTasks()
+            throws IOException {
+        Path filePath = tempDirectory.resolve("duke.txt");
+        Files.write(filePath, List.of(
+                "invalid line",
+                "T | 0 | valid task"
+        ), StandardCharsets.UTF_8);
+
+        Mochi mochi = new Mochi(filePath);
+        List<String> loadingMessages = mochi.getLoadingMessages();
+
+        assertAll(
+                () -> assertEquals(1, loadingMessages.size()),
+                () -> assertTrue(loadingMessages.get(0).startsWith(
+                        "WARNING: Skipped invalid data on line 1:")),
+                () -> assertTrue(mochi.getResponse("list").contains("valid task")),
+                () -> assertThrows(UnsupportedOperationException.class,
+                        () -> loadingMessages.add("another warning"))
+        );
+    }
+
+    @Test
+    public void getLoadingMessages_unreadableDataPath_returnsErrorAndStartsEmpty() {
+        Mochi mochi = new Mochi(tempDirectory);
+
+        assertAll(
+                () -> assertEquals(List.of(
+                        "OOPS!!! I couldn't read the data file. "
+                                + "Starting with an empty task list."),
+                        mochi.getLoadingMessages()),
+                () -> assertEquals("Here are the tasks in your list:",
+                        mochi.getResponse("list"))
+        );
     }
 
     @Test

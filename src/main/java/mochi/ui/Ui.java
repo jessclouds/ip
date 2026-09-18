@@ -169,8 +169,16 @@ public class Ui {
      * Shows a message when the data file cannot be loaded.
      */
     public void showLoadingError() {
-        System.out.println(
-                "OOPS!!! I couldn't read the data file. Starting with an empty task list.");
+        System.out.println(getLoadingErrorResponse());
+    }
+
+    /**
+     * Returns a message explaining that the data file could not be loaded.
+     *
+     * @return Loading error message.
+     */
+    public String getLoadingErrorResponse() {
+        return "OOPS!!! I couldn't read the data file. Starting with an empty task list.";
     }
 
     /**
@@ -179,7 +187,17 @@ public class Ui {
      * @param warning Warning text to display.
      */
     public void showLoadingWarning(String warning) {
-        System.out.println("WARNING: " + warning);
+        System.out.println(getLoadingWarningResponse(warning));
+    }
+
+    /**
+     * Returns a warning about one malformed line in the data file.
+     *
+     * @param warning Warning text to format.
+     * @return Formatted loading warning.
+     */
+    public String getLoadingWarningResponse(String warning) {
+        return "WARNING: " + warning;
     }
 
     /**
