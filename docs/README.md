@@ -6,6 +6,21 @@
 
 // Product intro goes here
 
+## Command aliases
+
+Mochi accepts these shorter alternatives to the existing commands:
+
+| Alias | Existing command |
+|-------|------------------|
+| `t`   | `todo`           |
+| `d`   | `deadline`       |
+| `e`   | `event`          |
+| `l`   | `list`           |
+| `f`   | `find`           |
+
+Use the same arguments as the corresponding existing command. For example,
+`t read book` behaves exactly like `todo read book`.
+
 ## Adding deadlines
 
 // Describe the action and its outcome.

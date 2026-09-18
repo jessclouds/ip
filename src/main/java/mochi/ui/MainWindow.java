@@ -66,6 +66,8 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
+        assert mochi != null : "Mochi backend must be set before handling user input";
+
         String input = userInput.getText();
         String response = mochi.getResponse(input);
         dialogContainer.getChildren().addAll(
