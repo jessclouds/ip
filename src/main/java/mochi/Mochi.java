@@ -86,6 +86,22 @@ public class Mochi {
         return isExitRequested;
     }
 
+    /**
+     * Returns messages about problems encountered while loading saved tasks.
+     *
+     * @return An immutable list of loading error and warning messages.
+     */
+    public List<String> getLoadingMessages() {
+        ArrayList<String> messages = new ArrayList<>();
+        if (isLoadingFailed) {
+            messages.add(ui.getLoadingErrorResponse());
+        }
+        for (String warning : loadingWarnings) {
+            messages.add(ui.getLoadingWarningResponse(warning));
+        }
+        return List.copyOf(messages);
+    }
+
     private String execute(Parser.Command command) throws MochiException {
         assert command != null : "Parser must return a command";
 

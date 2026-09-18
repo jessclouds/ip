@@ -59,6 +59,9 @@ public class MainWindow extends AnchorPane {
      */
     public void setMochi(Mochi mochi) {
         this.mochi = mochi;
+        mochi.getLoadingMessages().stream()
+                .map(message -> DialogBox.getMochiDialog(message, mochiImage))
+                .forEach(dialogContainer.getChildren()::add);
     }
 
     /**

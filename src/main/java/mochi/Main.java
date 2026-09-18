@@ -30,6 +30,7 @@ public class Main extends Application {
                     Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane mainWindow = fxmlLoader.load();
             Scene scene = new Scene(mainWindow);
+            stage.setTitle("Mochi");
             stage.setScene(scene);
             fxmlLoader.<MainWindow>getController().setMochi(mochi);
             stage.show();
