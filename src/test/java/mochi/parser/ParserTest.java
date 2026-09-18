@@ -74,6 +74,36 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_commandAliases_returnsEquivalentCommands() throws MochiException {
+        Parser.Command todoCommand = Parser.parse("t read book");
+        Parser.Command deadlineCommand =
+                Parser.parse("d return book /by 2026-06-06 1800");
+        Parser.Command eventCommand = Parser.parse(
+                "e project meeting /from 2026-08-06 1400 /to 2026-08-06 1600");
+        Parser.Command listCommand = Parser.parse("l");
+        Parser.Command findCommand = Parser.parse("f book");
+
+        assertAll(
+                () -> assertEquals(Parser.CommandType.ADD, todoCommand.getType()),
+                () -> assertInstanceOf(Todo.class, todoCommand.getTask()),
+                () -> assertEquals("[T][ ] read book", todoCommand.getTask().toString()),
+                () -> assertEquals(Parser.CommandType.ADD, deadlineCommand.getType()),
+                () -> assertInstanceOf(Deadline.class, deadlineCommand.getTask()),
+                () -> assertEquals("[D][ ] return book (by: Jun 06 2026, 6:00 PM)",
+                        deadlineCommand.getTask().toString()),
+                () -> assertEquals(Parser.CommandType.ADD, eventCommand.getType()),
+                () -> assertInstanceOf(Event.class, eventCommand.getTask()),
+                () -> assertEquals(
+                        "[E][ ] project meeting (from: Aug 06 2026, 2:00 PM "
+                                + "to: Aug 06 2026, 4:00 PM)",
+                        eventCommand.getTask().toString()),
+                () -> assertEquals(Parser.CommandType.LIST, listCommand.getType()),
+                () -> assertEquals(Parser.CommandType.FIND, findCommand.getType()),
+                () -> assertEquals("book", findCommand.getKeyword())
+        );
+    }
+
+    @Test
     public void parse_missingArguments_exceptionThrown() {
         assertAll(
                 () -> assertThrows(MochiException.class, () -> Parser.parse("todo")),

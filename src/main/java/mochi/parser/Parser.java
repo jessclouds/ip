@@ -99,20 +99,26 @@ public final class Parser {
      */
     public static Command parse(String input) throws MochiException {
         String command = input.trim();
-        if (command.equals("bye")) {
+        String[] words = command.split("\\s+", 2);
+        String commandWord = expandAlias(words[0]);
+
+        if (commandWord.equals("bye") && words.length == 1) {
             return new Command(CommandType.BYE, null, 0, null);
         }
-        if (command.equals("list")) {
+        if (commandWord.equals("list") && words.length == 1) {
             return new Command(CommandType.LIST, null, 0, null);
         }
 
-        String[] words = command.split("\\s+", 2);
-        String commandWord = words[0];
         if (words.length < 2) {
             throw missingArgumentException(commandWord);
         }
 
         String arguments = words[1].trim();
+        return parseCommandWithArguments(commandWord, arguments);
+    }
+
+    private static Command parseCommandWithArguments(String commandWord, String arguments)
+            throws MochiException {
         switch (commandWord) {
             case "mark":
                 return new Command(CommandType.MARK, null, parseTaskNumber(arguments), null);
@@ -133,6 +139,23 @@ public final class Parser {
         }
     }
 
+    private static String expandAlias(String commandWord) {
+        switch (commandWord) {
+            case "t":
+                return "todo";
+            case "d":
+                return "deadline";
+            case "e":
+                return "event";
+            case "l":
+                return "list";
+            case "f":
+                return "find";
+            default:
+                return commandWord;
+        }
+    }
+
     private static int parseTaskNumber(String argument) throws MochiException {
         try {
             return Integer.parseInt(argument);
@@ -146,6 +169,8 @@ public final class Parser {
             throw new MochiException("Use this format: deadline DESCRIPTION /by DATE.");
         }
         String[] parts = details.split(" /by ", 2);
+        assert parts.length == 2 : "Deadline delimiter check must produce two parts";
+
         String description = parts[0].trim();
         String by = parts[1].trim();
         if (description.isEmpty() || by.isEmpty()) {
@@ -164,11 +189,15 @@ public final class Parser {
             throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
         }
         String[] fromParts = details.split(" /from ", 2);
+        assert fromParts.length == 2 : "Event start delimiter check must produce two parts";
+
         if (!fromParts[1].contains(" /to ")) {
             throw new MochiException("Use this format: event DESCRIPTION /from START /to END.");
         }
 
         String[] toParts = fromParts[1].split(" /to ", 2);
+        assert toParts.length == 2 : "Event end delimiter check must produce two parts";
+
         String description = fromParts[0].trim();
         String from = toParts[0].trim();
         String to = toParts[1].trim();
@@ -188,21 +217,22 @@ public final class Parser {
     }
 
     private static MochiException missingArgumentException(String commandWord) {
-        if (commandWord.equals("todo")
-                || commandWord.equals("deadline")
-                || commandWord.equals("event")) {
-            return new MochiException(
-                    "The description of a " + commandWord + " cannot be empty.");
+        switch (commandWord) {
+            case "todo":
+            case "deadline":
+            case "event":
+                return new MochiException(
+                        "The description of a " + commandWord + " cannot be empty.");
+            case "mark":
+            case "unmark":
+            case "delete":
+                return new MochiException(
+                        "Please specify a task number to " + commandWord + ".");
+            case "find":
+                return new MochiException("Please specify a keyword to find.");
+            default:
+                return unknownCommandException();
         }
-        if (commandWord.equals("mark")
-                || commandWord.equals("unmark")
-                || commandWord.equals("delete")) {
-            return new MochiException("Please specify a task number to " + commandWord + ".");
-        }
-        if (commandWord.equals("find")) {
-            return new MochiException("Please specify a keyword to find.");
-        }
-        return unknownCommandException();
     }
 
     private static MochiException invalidDateTimeException() {
