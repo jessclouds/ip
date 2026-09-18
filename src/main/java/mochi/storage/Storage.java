@@ -79,6 +79,21 @@ public class Storage {
      */
     private Task parseTask(String line) {
         String[] fields = line.split(" \\| ", -1);
+        validateTaskFields(fields);
+
+        Task task = createTask(fields);
+        assert task != null : "A validated task type must create a task";
+
+        if (fields[1].equals("1")) {
+            task.mark();
+        }
+        return task;
+    }
+
+    /**
+     * Validates the structure and content shared by all stored task types.
+     */
+    private void validateTaskFields(String[] fields) {
         if (fields.length < 3) {
             throw new IllegalArgumentException("not enough fields");
         }
@@ -86,21 +101,7 @@ public class Storage {
             throw new IllegalArgumentException("completion status must be 0 or 1");
         }
 
-        int expectedFieldCount;
-        switch (fields[0]) {
-            case "T":
-                expectedFieldCount = 3;
-                break;
-            case "D":
-                expectedFieldCount = 4;
-                break;
-            case "E":
-                expectedFieldCount = 5;
-                break;
-            default:
-                throw new IllegalArgumentException("unknown task type '" + fields[0] + "'");
-        }
-
+        int expectedFieldCount = getExpectedFieldCount(fields[0]);
         if (fields.length != expectedFieldCount) {
             throw new IllegalArgumentException(
                     "wrong number of fields for a " + fields[0] + " task");
@@ -110,27 +111,38 @@ public class Storage {
                 throw new IllegalArgumentException("task details cannot be empty");
             }
         }
+    }
 
-        Task task;
+    /**
+     * Returns the expected field count for a supported stored task type.
+     */
+    private int getExpectedFieldCount(String taskType) {
+        switch (taskType) {
+            case "T":
+                return 3;
+            case "D":
+                return 4;
+            case "E":
+                return 5;
+            default:
+                throw new IllegalArgumentException("unknown task type '" + taskType + "'");
+        }
+    }
+
+    /**
+     * Reconstructs a task after its stored fields have been validated.
+     */
+    private Task createTask(String[] fields) {
         switch (fields[0]) {
             case "T":
-                task = new Todo(fields[2]);
-                break;
+                return new Todo(fields[2]);
             case "D":
-                task = createDeadline(fields);
-                break;
+                return createDeadline(fields);
             case "E":
-                task = createEvent(fields);
-                break;
+                return createEvent(fields);
             default:
                 throw new AssertionError("Task type was validated before task creation");
         }
-        assert task != null : "A validated task type must create a task";
-
-        if (fields[1].equals("1")) {
-            task.mark();
-        }
-        return task;
     }
 
     /**

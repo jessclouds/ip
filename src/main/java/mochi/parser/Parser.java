@@ -114,6 +114,11 @@ public final class Parser {
         }
 
         String arguments = words[1].trim();
+        return parseCommandWithArguments(commandWord, arguments);
+    }
+
+    private static Command parseCommandWithArguments(String commandWord, String arguments)
+            throws MochiException {
         switch (commandWord) {
             case "mark":
                 return new Command(CommandType.MARK, null, parseTaskNumber(arguments), null);
@@ -212,21 +217,22 @@ public final class Parser {
     }
 
     private static MochiException missingArgumentException(String commandWord) {
-        if (commandWord.equals("todo")
-                || commandWord.equals("deadline")
-                || commandWord.equals("event")) {
-            return new MochiException(
-                    "The description of a " + commandWord + " cannot be empty.");
+        switch (commandWord) {
+            case "todo":
+            case "deadline":
+            case "event":
+                return new MochiException(
+                        "The description of a " + commandWord + " cannot be empty.");
+            case "mark":
+            case "unmark":
+            case "delete":
+                return new MochiException(
+                        "Please specify a task number to " + commandWord + ".");
+            case "find":
+                return new MochiException("Please specify a keyword to find.");
+            default:
+                return unknownCommandException();
         }
-        if (commandWord.equals("mark")
-                || commandWord.equals("unmark")
-                || commandWord.equals("delete")) {
-            return new MochiException("Please specify a task number to " + commandWord + ".");
-        }
-        if (commandWord.equals("find")) {
-            return new MochiException("Please specify a keyword to find.");
-        }
-        return unknownCommandException();
     }
 
     private static MochiException invalidDateTimeException() {
