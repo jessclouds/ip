@@ -117,6 +117,22 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_commandWithSurroundingWhitespace_ignoresExtraWhitespace()
+            throws MochiException {
+        Parser.Command command = Parser.parse("  todo   read book  ");
+
+        assertEquals("[T][ ] read book", command.getTask().toString());
+    }
+
+    @Test
+    public void parse_simpleCommandWithArguments_exceptionThrown() {
+        assertAll(
+                () -> assertThrows(MochiException.class, () -> Parser.parse("bye now")),
+                () -> assertThrows(MochiException.class, () -> Parser.parse("list now"))
+        );
+    }
+
+    @Test
     public void parse_invalidTaskNumber_exceptionThrown() {
         assertAll(
                 () -> assertThrows(MochiException.class, () -> Parser.parse("mark two")),
@@ -133,7 +149,20 @@ public class ParserTest {
                 () -> assertThrows(MochiException.class,
                         () -> Parser.parse("deadline return book /by 2026-02-30 1800")),
                 () -> assertThrows(MochiException.class,
+                        () -> Parser.parse("deadline /by 2026-06-06 1800")),
+                () -> assertThrows(MochiException.class,
+                        () -> Parser.parse("deadline return book /by ")),
+                () -> assertThrows(MochiException.class,
                         () -> Parser.parse("event meeting /from 2026-08-06 1400")),
+                () -> assertThrows(MochiException.class,
+                        () -> Parser.parse(
+                                "event /from 2026-08-06 1400 /to 2026-08-06 1600")),
+                () -> assertThrows(MochiException.class,
+                        () -> Parser.parse(
+                                "event meeting /from  /to 2026-08-06 1600")),
+                () -> assertThrows(MochiException.class,
+                        () -> Parser.parse(
+                                "event meeting /from 2026-08-06 1400 /to ")),
                 () -> assertThrows(MochiException.class,
                         () -> Parser.parse(
                                 "event meeting /from 2026-08-06 1600 /to 2026-08-06 1400"))
