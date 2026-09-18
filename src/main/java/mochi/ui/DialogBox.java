@@ -18,6 +18,8 @@ import javafx.scene.layout.HBox;
  * Displays a chat message together with the speaker's image.
  */
 public class DialogBox extends HBox {
+    private static final String ERROR_PREFIX = "OOPS!!!";
+
     @FXML
     private Label dialog;
 
@@ -54,7 +56,9 @@ public class DialogBox extends HBox {
      * @return Dialog box aligned for the user.
      */
     public static DialogBox getUserDialog(String text, Image image) {
-        return new DialogBox(text, image);
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.getStyleClass().add("user-dialog");
+        return dialogBox;
     }
 
     /**
@@ -66,6 +70,10 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getMochiDialog(String text, Image image) {
         DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.getStyleClass().add("mochi-dialog");
+        if (text.startsWith(ERROR_PREFIX)) {
+            dialogBox.getStyleClass().add("error-dialog");
+        }
         dialogBox.flip();
         return dialogBox;
     }
